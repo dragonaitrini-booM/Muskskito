@@ -7,6 +7,7 @@ import (
     "github.com/joho/godotenv"
     "github.com/muskskito/muskskito/database"
     "github.com/muskskito/muskskito/handlers"
+    "github.com/muskskito/muskskito/internal/firewall"
     "github.com/muskskito/muskskito/middleware"
     "log"
     "os"
@@ -40,8 +41,11 @@ func main() {
         auth.POST("/logout", handlers.Logout)
     }
 
+    firewallAgent := firewall.New()
+
     protected := r.Group("/")
     protected.Use(middleware.AuthMiddleware())
+    protected.Use(firewallAgent.Middleware())
 
     settings := protected.Group("/settings")
     {
